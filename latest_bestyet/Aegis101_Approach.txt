@@ -1,0 +1,60 @@
+TEAM NAME: Aegis101
+CHALLENGE: Flipkart Gridlock Hackathon - Spatio-Temporal Travel Demand Forecasting
+
+================================================================================
+1. SYSTEM ARCHITECTURE & PIPELINE APPROACH
+================================================================================
+Our approach treats the gridlock problem as a highly skewed, spatio-temporal regression task. Rather than relying on leaky global averages or naive time-series lags that fail due to the limited 2-day dataset, we engineered a rigorous, structurally diverse Gradient Boosting ensemble optimized directly for the R² metric.
+
+The pipeline executes sequentially in a single Jupyter Notebook (Gridlock_Submission.ipynb):
+1. Data Ingestion & Leakage Prevention: We aggressively purge 'Day 49' from the training data. This prevents future temporal leakage and forces the models to genuinely learn spatial generalization rather than memorizing a "lookup table."
+2. Feature Engineering: Extraction of spatial density, coordinate geometry, and explicit categorical infrastructure crosses.
+3. K-Fold Target Encoding: Transforming meaningless geohash strings into pure mathematical risk weights using a strict Out-Of-Fold mapping loop.
+4. Intra-Day Time-Series CV: We validate locally using a 5-Fold Expanding Window Time-Series Split on Day 48 to ensure chronological integrity.
+5. Direct R² Stacking (Nelder-Mead): Base models are blended using a Scipy Optimizer that mathematically hunts for fractional weights to strictly maximize R², replacing standard MSE-based Ridge regressors.
+
+================================================================================
+2. FEATURE ENGINEERING DETAILS
+================================================================================
+We engineered explicit features to help the trees quickly separate the signals:
+
+A. Spatial & Topological Features:
+- Coordinate Geometry: Transformed 'lat' and 'lon' into 3D Cartesian coordinates (x, y, z) to give the models an accurate representation of physical distance.
+- Spatial Density (KNN): Used a KNeighborsRegressor on the coordinates to estimate the clustering density of high-demand traffic hubs.
+- K-Fold Geohash Encoding: Replaced 'geohash' with its historical mean demand using an isolated 5-Fold split. This converts high-cardinality strings into a continuous risk-weight without causing local target leakage.
+
+B. Temporal Features:
+- Cyclical Time: Applied sine and cosine transformations to 'hour' and 'minute' so the trees understand that 23:45 is chronologically adjacent to 00:00.
+- Peak Flags: Extracted Boolean features for 'is_morning_peak' and 'is_evening_peak'.
+
+C. Contextual Infrastructure Crosses (Non-Linear Shortcuts):
+To prevent the trees from wasting depth on complex interactions, we explicitly crossed critical categories:
+- 'weather_x_peak': E.g., Raining + Rush Hour.
+- 'capacity_risk': Number of Lanes + Large Vehicles Allowed.
+- 'road_weather': Road Type + Weather severity.
+
+D. Imputation Strategy:
+- Temperature was imputed using Geohash-grouped spatial means rather than a flat global median, preserving localized micro-climate data which proved to be a high-importance signal.
+
+================================================================================
+3. MODELS & TOOLS USED
+================================================================================
+Our architecture utilizes a mathematically stacked ensemble of the three most powerful gradient boosting frameworks:
+
+1. LightGBM (lgb): Fast, leaf-wise tree growth. Excellent at handling the high-cardinality spatial features and finding deep interactions.
+2. CatBoost (cb): Unmatched handling of categorical infrastructure crosses without heavy preprocessing. Extremely robust to overfitting.
+3. XGBoost (xgb): Provides heavy depth-wise regularization to control the extreme variance in the skewed demand targets.
+
+Tools / Libraries:
+- Python (Pandas, NumPy, Scikit-Learn)
+- Boosting Libraries (lightgbm, catboost, xgboost)
+- Optuna: Used offline for hyperparameter tuning.
+- Scipy (scipy.optimize.minimize): Used to deploy the Nelder-Mead algorithm for Direct R² Optimization during the final stacking phase.
+
+================================================================================
+4. REPRODUCIBILITY INSTRUCTIONS
+================================================================================
+1. Ensure `dataset/train.csv` and `dataset/test.csv` are located in the root directory relative to the notebook.
+2. Open `Gridlock_Submission.ipynb` in Google Colab or a local Jupyter environment.
+3. Execute "Run All". 
+4. The notebook will automatically process the features, run the 5-Fold CV, optimize the blending weights via Scipy, and generate the final `submission.csv` in the same directory.
