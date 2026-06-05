@@ -1,0 +1,181 @@
+For your current notebook, these are the highest ROI improvements in order:
+
+1. Time Features (Highest Impact)
+
+Right now you're feeding timestamp almost directly.
+
+Add:
+
+hour
+minute
+is_morning_peak (7-10)
+is_evening_peak (5-8)
+
+and
+
+sin_time
+cos_time
+
+The Grab winners found hour to be one of the most important features. Traffic is highly dependent on time of day.
+
+2. Decode Geohash
+
+Currently:
+
+geohash -> LabelEncoder
+
+Better:
+
+geohash -> latitude
+geohash -> longitude
+
+Then keep:
+
+lat
+lon
+
+as numerical features.
+
+This was used in top Grab solutions and usually improves performance because nearby locations get similar representations.
+
+3. Geo Clustering
+
+After decoding geohash:
+
+KMeans(n_clusters=20)
+
+Create:
+
+geo_cluster
+
+feature.
+
+Grab finalists reported this among their most useful features.
+
+4. Feature Crosses
+
+Create:
+
+RoadType + Weather
+RoadType + LargeVehicles
+NumberOfLanes * LargeVehicles
+
+Example:
+
+Residential_Rainy
+Street_Sunny
+
+Traffic behaves very differently under these combinations.
+
+5. CatBoost
+
+Try:
+
+CatBoostRegressor
+
+alongside LightGBM.
+
+For datasets with many categorical columns:
+
+geohash
+RoadType
+Weather
+Landmarks
+LargeVehicles
+
+CatBoost often performs surprisingly well.
+
+6. Ensemble
+
+Instead of:
+
+Final = LightGBM
+
+do:
+
+Final = 0.5*LightGBM + 0.5*CatBoost
+
+This was a common pattern in Grab solutions.
+
+7. Proper Validation
+
+Your notebook appears to use a normal split.
+
+Use:
+
+TimeSeriesSplit
+
+or
+
+train = earlier timestamps
+valid = later timestamps
+
+Traffic data is temporal.
+
+8. Feature Importance Plot
+
+For presentation:
+
+Show:
+
+Top Features
+-------------
+hour
+geohash
+temperature
+weather
+lanes
+
+Judges love interpretability.
+
+What I Would Actually Add Before Submission
+Must Add
+
+✅ hour
+
+✅ minute
+
+✅ sin_time
+
+✅ cos_time
+
+✅ lat
+
+✅ lon
+
+✅ geo_cluster
+
+Nice To Have
+
+✅ CatBoost
+
+✅ LightGBM + CatBoost ensemble
+
+Probably Not Worth It For Hackathon Time
+
+❌ LSTM
+
+❌ ConvLSTM
+
+❌ Graph Neural Networks
+
+They take much longer and often don't beat a well-engineered LightGBM on tabular traffic data.
+
+Expected Improvement
+
+Current:
+
+R² ≈ 0.86
+
+With the above feature engineering:
+
+R² ≈ 0.89 - 0.93
+
+is realistic if the dataset genuinely contains signal and isn't already leakage-limited.
+
+One more thing: check whether the same (geohash, day, timestamp) combination appears in both train and test. The old Gridlock challenge was vulnerable to a simple lookup-table solution that achieved near-perfect scores. If your current hackathon dataset has a similar pattern, that can outperform any ML model.
+
+
+"Hi, I am from the Team Skill Issue(the first team to get that 100 score), you are absolutely right, you cannot physically get above 91 with the dataset they have given.
+By pure chance my team searched for related datasets to see how it performs and to our horror, we find the complete dataset, at first we didn't believe it. We thought flipkart wouldn't do something like this but we got our 100 score and we were disappointed. We got this score at around 2am and then we mailed Hackerearth at around 3am regarding this. They were pretty lazy about this. They prob thought no one would find it, they took around 5 hrs and wrote back that external datasets won't be allowed. And that wasn't the point. Them being such a big organization, they didn't even did the most basic checks? and how are they going to ensure things? Now that people have seen the datasets we can train it on their dataset with increased weight on things we know are going to increase our accuracy and get a 97 98 score. How will they validate that?
+Believe me, we are as frustrated as everyone else, our best score right now except that 100 is 91.54, and that is the score that will be considered, the leader board kind of doesn't matter now. There is no option to take our submission down."
