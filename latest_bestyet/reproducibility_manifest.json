@@ -23,7 +23,7 @@
     "train_rows": 69427,
     "test_rows": 41778,
     "day_49_purged": true,
-    "n_features": 30,
+    "n_features": 31,
     "feature_names": [
       "lat",
       "lon",
@@ -46,28 +46,29 @@
       "large_vehicle_flag",
       "landmark_flag",
       "bottleneck_index",
-      "Temperature_per_Lane",
-      "Time_Density",
       "geohash",
       "RoadType",
       "Weather",
       "LargeVehicles",
       "Landmarks",
       "road_weather_cross",
-      "region_id"
+      "region_id",
+      "weather_x_peak",
+      "capacity_risk",
+      "road_weather"
     ]
   },
   "validation": {
     "protocol": "Expanding Block Walk-Forward (5 folds)",
     "fold_r2_scores": [
-      0.892614,
-      0.919954,
-      0.905836,
-      0.766868,
-      0.756498
+      0.911355,
+      0.943912,
+      0.911977,
+      0.840095,
+      0.788438
     ],
-    "mean_cv_r2": 0.848354,
-    "mean_cv_score": 84.8354
+    "mean_cv_r2": 0.879156,
+    "mean_cv_score": 87.9156
   },
   "ensemble_weights": {
     "lightgbm": 0.4,
