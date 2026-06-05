@@ -1,0 +1,81 @@
+{
+  "submission_file": "/content/drive/MyDrive/flipkart_gridlock/submission.csv",
+  "environment": {
+    "python": "3.12.13",
+    "pandas": "2.2.2",
+    "numpy": "2.0.2",
+    "lightgbm": "4.5.0",
+    "catboost": "1.2.8",
+    "xgboost": "2.1.4",
+    "scikit_learn": "1.6.1",
+    "colab": "True",
+    "gpu_used": "True"
+  },
+  "reproducibility": {
+    "master_seed": 42,
+    "ensemble_seeds": [
+      42,
+      101,
+      202
+    ]
+  },
+  "data": {
+    "train_rows": 69427,
+    "test_rows": 41778,
+    "day_49_purged": true,
+    "n_features": 30,
+    "feature_names": [
+      "lat",
+      "lon",
+      "x",
+      "y",
+      "z",
+      "spatial_density",
+      "day",
+      "hour",
+      "minute",
+      "time_slot",
+      "sin_time",
+      "cos_time",
+      "sin_day",
+      "cos_day",
+      "is_morning_peak",
+      "is_evening_peak",
+      "NumberofLanes",
+      "Temperature",
+      "large_vehicle_flag",
+      "landmark_flag",
+      "bottleneck_index",
+      "Temperature_per_Lane",
+      "Time_Density",
+      "geohash",
+      "RoadType",
+      "Weather",
+      "LargeVehicles",
+      "Landmarks",
+      "road_weather_cross",
+      "region_id"
+    ]
+  },
+  "validation": {
+    "protocol": "Expanding Block Walk-Forward (5 folds)",
+    "fold_r2_scores": [
+      0.892614,
+      0.919954,
+      0.905836,
+      0.766868,
+      0.756498
+    ],
+    "mean_cv_r2": 0.848354,
+    "mean_cv_score": 84.8354
+  },
+  "ensemble_weights": {
+    "lightgbm": 0.4,
+    "catboost": 0.35,
+    "xgboost": 0.25
+  },
+  "hyperparameters": {
+    "n_clusters": 15,
+    "knn_neighbors": 11
+  }
+}
